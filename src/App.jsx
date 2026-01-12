@@ -16,6 +16,7 @@ const CarWashWebsite = () => {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [selectedGalleryFilter, setSelectedGalleryFilter] = useState('all');
   const [selectedGalleryImage, setSelectedGalleryImage] = useState(null);
+  const [hoveredImage, setHoveredImage] = useState(null);
   
   const headerRef = useRef(null);
   const titleRef = useRef(null);
@@ -25,7 +26,23 @@ const CarWashWebsite = () => {
   const heroRef = useRef(null);
   const navRef = useRef(null);
   const galleryRef = useRef(null);
+  const galleryImagesRef = useRef([]);
+  const logoRef = useRef(null);
   const timeline = useRef(null);
+
+  // Color palette for better contrast and visibility
+  const colors = {
+    primary: '#0F62FE', // IBM Blue - better visibility
+    secondary: '#FF6B35', // Orange for CTAs
+    accent: '#00D4AA', // Teal for highlights
+    dark: '#161616',
+    gray: '#525252',
+    lightGray: '#F4F4F4',
+    white: '#FFFFFF',
+    gradient1: 'linear-gradient(135deg, #0F62FE 0%, #4589FF 100%)',
+    gradient2: 'linear-gradient(135deg, #FF6B35 0%, #FF9E3D 100%)',
+    gradient3: 'linear-gradient(135deg, #00D4AA 0%, #34E4D8 100%)',
+  };
 
   // Premium Services Data
   const premiumServices = [
@@ -45,9 +62,9 @@ const CarWashWebsite = () => {
         "Self-Cleaning Properties"
       ],
       images: [
-        "https://images.unsplash.com/photo-1565689221354-d87f85d4aee2?w=800&auto=format",
-        "https://images.unsplash.com/photo-1621155346337-1d19476ba7d6?w-800&auto=format",
-        "https://images.unsplash.com/photo-1493238792000-8113da705763?w=800&auto=format"
+        "/images/ceramic1.jpg",
+        "/images/ceramic2.jpg",
+        "/images/ceramic3.jpg"
       ],
       popular: true
     },
@@ -67,9 +84,9 @@ const CarWashWebsite = () => {
         "Final Polish & Sealant"
       ],
       images: [
-        "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=800&auto=format",
-        "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&auto=format",
-        "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&auto=format"
+        "/images/paint1.jpg",
+        "/images/paint2.jpg",
+        "/images/paint3.jpg"
       ],
       popular: false
     },
@@ -89,9 +106,9 @@ const CarWashWebsite = () => {
         "Anti-Microbial Treatment"
       ],
       images: [
-        "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&auto=format",
-        "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=800&auto=format",
-        "https://images.unsplash.com/photo-1553440569-bcc63803a83d?w=800&auto=format"
+        "/images/leather1.jpg",
+        "/images/leather2.jpg",
+        "/images/leather3.jpg"
       ],
       popular: false
     },
@@ -111,118 +128,173 @@ const CarWashWebsite = () => {
         "2-Year Warranty"
       ],
       images: [
-        "https://images.unsplash.com/photo-1565689221359-d87f85d4aee2?w=800&auto=format",
-        "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&auto=format",
-        "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&auto=format"
+        "/images/headlight1.jpg",
+        "/images/headlight2.jpg",
+        "/images/headlight3.jpg"
       ],
       popular: true
     }
   ];
 
-  // Gallery Images Data
+  // Gallery Images Data - 8 images for the new gallery section
+  const carWashGallery = [
+    {
+      id: 1,
+      url: "/images/carwash1.jpg",
+      title: "Foam Cannon Wash",
+      category: "exterior",
+      description: "High-pressure foam application for deep cleaning"
+    },
+    {
+      id: 2,
+      url: "/images/carwash2.jpg",
+      title: "Hand Drying Technique",
+      category: "exterior",
+      description: "Microfiber hand drying for streak-free finish"
+    },
+    {
+      id: 3,
+      url: "/images/carwash3.jpg",
+      title: "Wheel Detailing",
+      category: "wheels",
+      description: "Professional wheel cleaning and protection"
+    },
+    {
+      id: 4,
+      url: "/images/carwash4.jpg",
+      title: "Interior Vacuum",
+      category: "interior",
+      description: "Deep vacuum cleaning with professional equipment"
+    },
+    {
+      id: 5,
+      url: "/images/carwash5.jpg",
+      title: "Glass Polish",
+      category: "exterior",
+      description: "Crystal clear glass treatment"
+    },
+    {
+      id: 6,
+      url: "/images/carwash6.jpg",
+      title: "Tire Shine",
+      category: "wheels",
+      description: "Premium tire dressing application"
+    },
+    {
+      id: 7,
+      url: "/images/carwash7.jpg",
+      title: "Paint Decontamination",
+      category: "exterior",
+      description: "Clay bar treatment for smooth finish"
+    },
+    {
+      id: 8,
+      url: "/images/carwash8.jpg",
+      title: "Final Inspection",
+      category: "quality",
+      description: "Quality check under specialized lighting"
+    }
+  ];
+
+  // Process Gallery Images
   const galleryImages = [
     {
       id: 1,
-      url: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&auto=format",
+      url: "/images/process1.jpg",
       title: "Ceramic Coating Application",
       category: "exterior",
       service: "Ceramic Coating Pro"
     },
     {
       id: 2,
-      url: "https://images.unsplash.com/photo-1565689221359-d87f85d4aee2?w=800&auto=format",
+      url: "/images/process2.jpg",
       title: "Headlight Restoration",
       category: "exterior",
       service: "Headlight Restoration Pro"
     },
     {
       id: 3,
-      url: "https://images.unsplash.com/photo-1553440569-bcc63803a83d?w=800&auto=format",
+      url: "/images/process3.jpg",
       title: "Leather Interior Detailing",
       category: "interior",
       service: "Leather Restoration Suite"
     },
     {
       id: 4,
-      url: "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&auto=format",
+      url: "/images/process4.jpg",
       title: "Paint Correction Process",
       category: "exterior",
       service: "Paint Correction Elite"
     },
     {
       id: 5,
-      url: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=800&auto=format",
+      url: "/images/process5.jpg",
       title: "Engine Bay Cleaning",
       category: "engine",
       service: "Premium Engine Detail"
     },
     {
       id: 6,
-      url: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=800&auto=format",
+      url: "/images/process6.jpg",
       title: "Final Polish Stage",
       category: "finishing",
       service: "Ultimate Detailing Package"
-    },
-    {
-      id: 7,
-      url: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&auto=format",
-      title: "Wheel Detailing",
-      category: "exterior",
-      service: "Premium Wheel Care"
-    },
-    {
-      id: 8,
-      url: "https://images.unsplash.com/photo-1621155346337-1d19476ba7d6?w=800&auto=format",
-      title: "Interior Sanitization",
-      category: "interior",
-      service: "Complete Interior Care"
-    },
-    {
-      id: 9,
-      url: "https://images.unsplash.com/photo-1493238792000-8113da705763?w=800&auto=format",
-      title: "Water Beading Effect",
-      category: "finishing",
-      service: "Ceramic Coating Pro"
     }
   ];
 
-  // Initialize GSAP timeline
+  // Initialize GSAP timeline with enhanced animations
   useEffect(() => {
     timeline.current = gsap.timeline();
     
-    // Hero animation sequence
+    // Logo animation
+    if (logoRef.current) {
+      gsap.from(logoRef.current, {
+        duration: 1,
+        scale: 0,
+        rotation: 360,
+        ease: "back.out(1.7)"
+      });
+    }
+
+    // Hero animation sequence with 3D effects
     timeline.current
       .from(heroRef.current, {
-        duration: 1.2,
-        y: 50,
-        opacity: 0,
-        ease: "power3.out"
-      })
-      .from(titleRef.current, {
         duration: 1.5,
         y: 100,
         opacity: 0,
-        scale: 0.9,
-        ease: "back.out(1.7)",
-        delay: -0.8
+        rotationX: 15,
+        transformPerspective: 1000,
+        ease: "power3.out"
+      })
+      .from(titleRef.current, {
+        duration: 1.8,
+        y: 150,
+        opacity: 0,
+        scale: 0.8,
+        rotationX: 10,
+        transformPerspective: 800,
+        ease: "back.out(2)",
+        delay: -1
       })
       .from(".hero-subtitle", {
-        duration: 1,
-        y: 30,
+        duration: 1.2,
+        y: 50,
         opacity: 0,
+        rotationX: 5,
         ease: "power3.out",
-        delay: -0.5
+        delay: -0.7
       })
       .from(".cta-buttons", {
-        duration: 0.8,
-        y: 30,
+        duration: 1,
+        y: 40,
         opacity: 0,
-        stagger: 0.2,
-        ease: "power3.out",
-        delay: -0.3
+        stagger: 0.3,
+        scale: 0.9,
+        ease: "back.out(1.5)",
+        delay: -0.4
       });
 
-    // Services animation with ScrollTrigger
+    // Services animation with 3D card flip effect
     servicesRef.current.forEach((service, index) => {
       if (service) {
         gsap.from(service, {
@@ -231,17 +303,18 @@ const CarWashWebsite = () => {
             start: "top 85%",
             toggleActions: "play none none reverse"
           },
-          duration: 1,
-          y: 60,
+          duration: 1.2,
+          y: 80,
           opacity: 0,
-          rotateX: 15,
-          stagger: 0.15,
+          rotationY: 20,
+          transformPerspective: 1000,
+          stagger: 0.2,
           ease: "power3.out"
         });
       }
     });
 
-    // Gallery animation
+    // Gallery animation with staggered items
     if (galleryRef.current) {
       gsap.from(galleryRef.current, {
         scrollTrigger: {
@@ -249,28 +322,51 @@ const CarWashWebsite = () => {
           start: "top 85%",
           toggleActions: "play none none reverse"
         },
-        duration: 1.2,
-        y: 80,
+        duration: 1.5,
+        y: 100,
         opacity: 0,
         ease: "power3.out"
       });
     }
 
-    // Pricing animation
+    // Car Wash Gallery animation
+    galleryImagesRef.current.forEach((image, index) => {
+      if (image) {
+        gsap.from(image, {
+          scrollTrigger: {
+            trigger: image,
+            start: "top 90%",
+            toggleActions: "play none none reverse"
+          },
+          duration: 1,
+          scale: 0.8,
+          opacity: 0,
+          rotationY: -30,
+          transformPerspective: 800,
+          stagger: 0.1,
+          ease: "back.out(1.5)",
+          delay: index * 0.05
+        });
+      }
+    });
+
+    // Pricing animation with 3D effect
     gsap.from(pricingRef.current, {
       scrollTrigger: {
         trigger: pricingRef.current,
         start: "top 85%",
         toggleActions: "play none none reverse"
       },
-      duration: 1.2,
-      y: 80,
+      duration: 1.5,
+      y: 100,
       opacity: 0,
+      rotationX: -10,
       scale: 0.95,
-      ease: "back.out(1.3)"
+      transformPerspective: 1000,
+      ease: "back.out(1.5)"
     });
 
-    // Stats animation
+    // Stats animation with counting
     const statsElements = statsRef.current?.querySelectorAll('.stat-number');
     if (statsElements) {
       statsElements.forEach((stat, index) => {
@@ -280,16 +376,20 @@ const CarWashWebsite = () => {
             start: "top 80%",
             toggleActions: "play none none reverse"
           },
-          duration: 2,
+          duration: 2.5,
           innerText: 0,
           ease: "power3.out",
           snap: { innerText: 1 },
-          delay: index * 0.2
+          delay: index * 0.3,
+          onUpdate: function() {
+            const value = Math.floor(this.targets()[0].innerText);
+            this.targets()[0].innerText = value.toLocaleString();
+          }
         });
       });
     }
 
-    // Navbar animation on scroll
+    // Navbar animation with blur and color change
     gsap.to(navRef.current, {
       scrollTrigger: {
         trigger: headerRef.current,
@@ -297,11 +397,52 @@ const CarWashWebsite = () => {
         end: "+=100",
         toggleActions: "play reverse play reverse"
       },
-      duration: 0.5,
-      backgroundColor: "rgba(49, 49, 49, 0.95)",
-      backdropFilter: "blur(10px)",
+      duration: 0.6,
+      backgroundColor: "rgba(22, 22, 22, 0.95)",
+      backdropFilter: "blur(20px)",
       padding: "1rem 0",
+      boxShadow: "0 10px 30px rgba(0, 0, 0, 0.1)",
       ease: "power2.out"
+    });
+
+    // Parallax effect for hero background elements
+    const floatingElements = document.querySelectorAll('.floating-element');
+    floatingElements.forEach((el, i) => {
+      gsap.to(el, {
+        scrollTrigger: {
+          trigger: headerRef.current,
+          start: "top top",
+          end: "bottom top",
+          scrub: true
+        },
+        y: (i % 2 === 0) ? 100 : -100,
+        rotation: (i % 2 === 0) ? 10 : -10,
+        ease: "none"
+      });
+    });
+
+    // Hover effect for gallery images
+    const galleryItems = document.querySelectorAll('.gallery-item');
+    galleryItems.forEach(item => {
+      item.addEventListener('mouseenter', () => {
+        gsap.to(item, {
+          duration: 0.3,
+          scale: 1.05,
+          rotationY: 5,
+          zIndex: 10,
+          ease: "power2.out"
+        });
+      });
+      
+      item.addEventListener('mouseleave', () => {
+        gsap.to(item, {
+          duration: 0.3,
+          scale: 1,
+          rotationY: 0,
+          zIndex: 1,
+          ease: "power2.out"
+        });
+      });
     });
 
     return () => {
@@ -324,10 +465,10 @@ const CarWashWebsite = () => {
 
   // Stats data
   const stats = [
-    { number: "5000+", label: "Happy Customers", icon: "😊" },
-    { number: "12+", label: "Years Experience", icon: "⭐" },
-    { number: "98%", label: "Satisfaction Rate", icon: "❤️" },
-    { number: "24/7", label: "Support Available", icon: "🕒" }
+    { number: "5000", label: "Happy Customers", icon: "😊" },
+    { number: "12", label: "Years Experience", icon: "⭐" },
+    { number: "98", label: "Satisfaction Rate", icon: "❤️" },
+    { number: "24", label: "Support Available", icon: "🕒" }
   ];
 
   // Plans data
@@ -363,7 +504,7 @@ const CarWashWebsite = () => {
         "Door Jambs & Trunk Clean",
         "Headlight Polish"
       ],
-      color: "from-[#EC625F] to-[#ff6b6b]"
+      color: `from-[${colors.secondary}] to-[#FF9E3D]`
     },
     {
       name: "Ultimate Detail",
@@ -390,7 +531,7 @@ const CarWashWebsite = () => {
       title: "Exterior Detailing",
       description: "Professional exterior cleaning with ceramic coating options for lasting protection.",
       icon: "🚗",
-      color: "from-[#EC625F] to-[#ff8e53]",
+      color: `from-[${colors.primary}] to-[#4589FF]`,
       features: ["Paint Correction", "Ceramic Coating", "Headlight Restoration", "Wheel Detailing"],
       time: "2-4 hours"
     },
@@ -406,7 +547,7 @@ const CarWashWebsite = () => {
       title: "Engine Bay Cleaning",
       description: "Safe and thorough engine cleaning to prevent corrosion and maintain performance.",
       icon: "🔧",
-      color: "from-[#313131] to-gray-800",
+      color: `from-[${colors.accent}] to-[#34E4D8]`,
       features: ["Degreasing", "Corrosion Protection", "Electrical Safety", "Dressing"],
       time: "1-2 hours"
     },
@@ -414,7 +555,7 @@ const CarWashWebsite = () => {
       title: "Premium Wax & Polish",
       description: "Showroom-quality finishing with premium waxes and polishes for ultimate shine.",
       icon: "✨",
-      color: "from-[#ff6b6b] to-[#ff9a9e]",
+      color: `from-[${colors.secondary}] to-[#FF9E3D]`,
       features: ["Hand Waxing", "Polish Application", "Gloss Enhancement", "UV Protection"],
       time: "2-3 hours"
     }
@@ -425,13 +566,15 @@ const CarWashWebsite = () => {
     setIsModalOpen(true);
     document.body.style.overflow = 'hidden';
     
-    // Animate modal in
+    // Animate modal in with 3D effect
     gsap.from(".booking-modal", {
-      duration: 0.5,
-      y: 50,
+      duration: 0.6,
+      y: 80,
       opacity: 0,
       scale: 0.9,
-      ease: "back.out(1.7)"
+      rotationX: -15,
+      transformPerspective: 1000,
+      ease: "back.out(2)"
     });
   };
 
@@ -450,7 +593,7 @@ const CarWashWebsite = () => {
 
   const scrollToSection = (sectionId) => {
     gsap.to(window, {
-      duration: 1.2,
+      duration: 1.5,
       scrollTo: sectionId,
       ease: "power3.inOut"
     });
@@ -461,54 +604,48 @@ const CarWashWebsite = () => {
     ? galleryImages 
     : galleryImages.filter(img => img.category === selectedGalleryFilter);
 
-  // Logo SVG Component
-  const Logo = () => (
-    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="20" cy="20" r="18" fill="url(#logoGradient)" stroke="#EC625F" strokeWidth="0.5"/>
-      <path d="M12 15L20 8L28 15V25L20 32L12 25V15Z" fill="white" fillOpacity="0.9"/>
-      <path d="M16 18L20 14L24 18V22L20 26L16 22V18Z" fill="url(#innerGradient)"/>
-      <path d="M18 20L20 18L22 20V22L20 24L18 22V20Z" fill="#EC625F"/>
-      <defs>
-        <linearGradient id="logoGradient" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#313131"/>
-          <stop offset="1" stopColor="#525252"/>
-        </linearGradient>
-        <linearGradient id="innerGradient" x1="16" y1="14" x2="24" y2="26" gradientUnits="userSpaceOnUse">
-          <stop stopColor="#ff6b6b"/>
-          <stop offset="1" stopColor="#EC625F"/>
-        </linearGradient>
-      </defs>
-    </svg>
-  );
-
   return (
-    <div className="min-h-screen bg-white font-sans overflow-x-hidden">
+    <div className="min-h-screen bg-white font-sans overflow-x-hidden" style={{ backgroundColor: colors.lightGray }}>
       {/* Scroll Progress Bar */}
       <div 
-        className="fixed top-0 left-0 h-1 z-50 bg-gradient-to-r from-[#EC625F] via-[#ff6b6b] to-[#ff8e53] transition-all duration-300"
-        style={{ width: `${scrollProgress}%` }}
+        className="fixed top-0 left-0 h-2 z-50 transition-all duration-300"
+        style={{ 
+          width: `${scrollProgress}%`,
+          background: colors.gradient2
+        }}
       />
 
       {/* Navigation */}
       <nav 
         ref={navRef}
         className="fixed top-0 w-full z-40 py-4 px-4 md:px-8 transition-all duration-500"
+        style={{ backgroundColor: 'rgba(22, 22, 22, 0.9)' }}
       >
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between">
-            {/* Logo with Image */}
+            {/* Logo with Image - Replace with your actual logo image */}
             <div 
               className="flex items-center cursor-pointer"
               onClick={() => scrollToSection('#hero')}
+              ref={logoRef}
             >
-              <div className="mr-3">
-                <Logo />
+              {/* Logo Image - Replace src with your logo file */}
+              <div className="mr-3 w-12 h-12 rounded-xl overflow-hidden bg-white p-2 shadow-lg">
+                <img 
+                  src="/logo.png" 
+                  alt="Prestige Car Care Logo" 
+                  className="w-full h-full object-contain"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='18' fill='%230F62FE'/%3E%3Cpath d='M12 15L20 8L28 15V25L20 32L12 25V15Z' fill='white'/%3E%3Cpath d='M16 18L20 14L24 18V22L20 26L16 22V18Z' fill='%23FF6B35'/%3E%3C/svg%3E";
+                  }}
+                />
               </div>
               <div>
-                <div className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#EC625F] to-[#ff6b6b] leading-tight">
+                <div className="text-xl font-bold leading-tight" style={{ color: colors.white }}>
                   PRESTIGE
                 </div>
-                <div className="text-xs text-[#525252] font-medium tracking-wider">
+                <div className="text-xs tracking-wider" style={{ color: colors.accent }}>
                   CAR CARE
                 </div>
               </div>
@@ -516,19 +653,26 @@ const CarWashWebsite = () => {
 
             {/* Desktop Menu */}
             <div className="hidden md:flex items-center space-x-8">
-              {['Services', 'Premium', 'Gallery', 'Pricing', 'Contact'].map((item) => (
+              {['Services', 'Premium', 'Gallery', 'CarWash', 'Pricing', 'Contact'].map((item) => (
                 <button
                   key={item}
                   onClick={() => scrollToSection(`#${item.toLowerCase()}`)}
-                  className="nav-link text-[#525252] hover:text-[#EC625F] font-medium transition-colors duration-300 relative group"
+                  className="nav-link font-medium transition-all duration-300 relative group"
+                  style={{ color: colors.white }}
                 >
-                  {item}
-                  <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-[#EC625F] to-[#ff6b6b] transition-all duration-300 group-hover:w-full" />
+                  <span className="relative z-10 hover:opacity-80 transition-opacity">
+                    {item}
+                  </span>
+                  <span 
+                    className="absolute -bottom-1 left-0 w-0 h-0.5 transition-all duration-300 group-hover:w-full"
+                    style={{ background: colors.gradient2 }}
+                  />
                 </button>
               ))}
               <button
                 onClick={() => openModal('Premium Detail')}
-                className="px-6 py-3 bg-gradient-to-r from-[#EC625F] to-[#ff6b6b] text-white font-bold rounded-full hover:shadow-xl hover-lift transition-all duration-300"
+                className="px-6 py-3 font-bold rounded-full hover-lift transition-all duration-300 shadow-lg hover:shadow-xl"
+                style={{ background: colors.gradient2, color: colors.white }}
               >
                 BOOK NOW
               </button>
@@ -536,32 +680,36 @@ const CarWashWebsite = () => {
 
             {/* Mobile Menu Button */}
             <button
-              className="md:hidden text-[#525252] hover:text-[#EC625F] transition-colors"
+              className="md:hidden transition-colors"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
+              style={{ color: colors.white }}
             >
-              <div className="w-6 h-6 relative">
-                <span className={`absolute h-0.5 w-full bg-current transition-all duration-300 ${isMenuOpen ? 'rotate-45 top-3' : 'top-1'}`} />
-                <span className={`absolute h-0.5 w-full bg-current transition-all duration-300 top-3 ${isMenuOpen ? 'opacity-0' : 'opacity-100'}`} />
-                <span className={`absolute h-0.5 w-full bg-current transition-all duration-300 ${isMenuOpen ? '-rotate-45 top-3' : 'top-5'}`} />
+              <div className="w-8 h-8 relative">
+                <span className={`absolute h-0.5 w-full bg-current transition-all duration-300 ${isMenuOpen ? 'rotate-45 top-4' : 'top-2'}`} />
+                <span className={`absolute h-0.5 w-full bg-current transition-all duration-300 top-4 ${isMenuOpen ? 'opacity-0' : 'opacity-100'}`} />
+                <span className={`absolute h-0.5 w-full bg-current transition-all duration-300 ${isMenuOpen ? '-rotate-45 top-4' : 'top-6'}`} />
               </div>
             </button>
           </div>
 
           {/* Mobile Menu */}
-          <div className={`md:hidden absolute top-full left-0 w-full bg-white shadow-2xl transition-all duration-500 ${isMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'}`}>
-            <div className="p-6 space-y-4">
-              {['Services', 'Premium', 'Gallery', 'Pricing', 'Contact'].map((item) => (
+          <div className={`md:hidden absolute top-full left-0 w-full transition-all duration-500 ${isMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'}`}
+               style={{ backgroundColor: colors.dark, backdropFilter: 'blur(20px)' }}>
+            <div className="p-6 space-y-2">
+              {['Services', 'Premium', 'Gallery', 'CarWash', 'Pricing', 'Contact'].map((item) => (
                 <button
                   key={item}
                   onClick={() => scrollToSection(`#${item.toLowerCase()}`)}
-                  className="block w-full text-left py-3 text-[#525252] hover:text-[#EC625F] font-medium border-b border-gray-100 last:border-0 transition-colors duration-300"
+                  className="block w-full text-left py-4 font-medium transition-colors duration-300 border-b last:border-0"
+                  style={{ color: colors.white, borderColor: 'rgba(255,255,255,0.1)' }}
                 >
                   {item}
                 </button>
               ))}
               <button
                 onClick={() => openModal('Premium Detail')}
-                className="w-full py-3 bg-gradient-to-r from-[#EC625F] to-[#ff6b6b] text-white font-bold rounded-lg hover-lift transition-all duration-300"
+                className="w-full py-4 font-bold rounded-lg hover-lift transition-all duration-300 mt-4"
+                style={{ background: colors.gradient2, color: colors.white }}
               >
                 BOOK APPOINTMENT
               </button>
@@ -574,28 +722,48 @@ const CarWashWebsite = () => {
       <header 
         ref={headerRef}
         id="hero"
-        className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-[#313131] via-[#414141] to-[#525252] pt-20"
+        className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20"
+        style={{ backgroundColor: colors.dark }}
       >
-        {/* Animated Background */}
+        {/* Animated Background with 3D elements */}
         <div className="absolute inset-0">
           {/* Geometric Pattern */}
-          <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0 opacity-10">
             <div className="absolute inset-0" style={{
-              backgroundImage: `radial-gradient(circle at 2px 2px, rgba(236, 98, 95, 0.3) 1px, transparent 0)`,
-              backgroundSize: '50px 50px'
+              backgroundImage: `radial-gradient(circle at 2px 2px, ${colors.primary} 1px, transparent 0)`,
+              backgroundSize: '60px 60px'
             }} />
           </div>
           
-          {/* Floating Particles */}
-          {[...Array(30)].map((_, i) => (
+          {/* 3D Floating Elements */}
+          {[...Array(15)].map((_, i) => (
             <div
               key={i}
-              className="absolute w-2 h-2 rounded-full bg-gradient-to-b from-[#EC625F] to-[#ff6b6b] opacity-20 animate-float"
+              className="floating-element absolute rounded-xl opacity-10"
+              style={{
+                width: `${100 + Math.random() * 200}px`,
+                height: `${100 + Math.random() * 200}px`,
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+                background: i % 3 === 0 ? colors.gradient1 : i % 3 === 1 ? colors.gradient2 : colors.gradient3,
+                transform: `rotate(${Math.random() * 360}deg)`,
+                filter: 'blur(40px)'
+              }}
+            />
+          ))}
+          
+          {/* Animated Particles */}
+          {[...Array(50)].map((_, i) => (
+            <div
+              key={i}
+              className="absolute w-1 h-1 rounded-full animate-float"
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
-                animationDelay: `${i * 0.2}s`,
-                animationDuration: `${4 + Math.random() * 4}s`
+                animationDelay: `${i * 0.1}s`,
+                animationDuration: `${3 + Math.random() * 3}s`,
+                background: i % 3 === 0 ? colors.primary : i % 3 === 1 ? colors.secondary : colors.accent,
+                opacity: 0.3
               }}
             />
           ))}
@@ -604,17 +772,23 @@ const CarWashWebsite = () => {
         {/* Hero Content */}
         <div className="relative z-10 max-w-7xl mx-auto px-4 md:px-8 text-center" ref={heroRef}>
           <div className="mb-12">
-            <div className="inline-flex items-center px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full border border-white/20 mb-8">
-              <span className="w-2 h-2 bg-[#EC625F] rounded-full mr-2 animate-pulse" />
-              <span className="text-white/90 text-sm font-semibold">PREMIUM CAR CARE SERVICES</span>
+            <div className="inline-flex items-center px-6 py-3 rounded-full border mb-8 backdrop-blur-sm"
+                 style={{ backgroundColor: 'rgba(255,255,255,0.1)', borderColor: 'rgba(255,255,255,0.2)' }}>
+              <span className="w-3 h-3 rounded-full mr-3 animate-pulse" style={{ background: colors.accent }} />
+              <span className="text-white/90 text-sm font-semibold tracking-wider">PREMIUM CAR CARE SERVICES</span>
             </div>
             
             <h1 
               ref={titleRef}
-              className="text-5xl md:text-7xl lg:text-8xl font-bold text-white mb-6 leading-tight"
+              className="text-5xl md:text-7xl lg:text-8xl font-bold mb-6 leading-tight"
             >
-              <span className="block">Elevate Your</span>
-              <span className="block mt-4 bg-clip-text text-transparent bg-gradient-to-r from-[#EC625F] via-[#ff6b6b] to-[#ff8e53]">
+              <span className="block text-white">Elevate Your</span>
+              <span className="block mt-4" style={{ 
+                background: colors.gradient1,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text'
+              }}>
                 Car's Shine
               </span>
             </h1>
@@ -631,24 +805,31 @@ const CarWashWebsite = () => {
           <div className="cta-buttons flex flex-col sm:flex-row gap-6 justify-center mt-12">
             <button 
               onClick={() => openModal('Premium Detail')}
-              className="group relative px-10 py-5 bg-gradient-to-r from-[#EC625F] to-[#ff6b6b] text-white font-bold rounded-full shadow-2xl hover-lift overflow-hidden transition-all duration-300"
+              className="group relative px-12 py-6 font-bold rounded-full shadow-2xl hover-lift overflow-hidden transition-all duration-300"
+              style={{ background: colors.gradient2, color: colors.white }}
             >
-              <span className="relative z-10 flex items-center justify-center">
+              <span className="relative z-10 flex items-center justify-center text-lg">
                 BOOK DETAILING
-                <svg className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 ml-3 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                 </svg>
               </span>
-              <div className="absolute inset-0 bg-gradient-to-r from-[#ff6b6b] to-[#ff8e53] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                   style={{ background: colors.gradient3 }} />
             </button>
             
             <button 
               onClick={() => scrollToSection('#premium')}
-              className="px-10 py-5 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white font-bold rounded-full border-2 border-white/30 hover:border-white/50 shadow-xl transition-all duration-300 group hover-lift"
+              className="px-12 py-6 font-bold rounded-full border-2 shadow-xl transition-all duration-300 group hover-lift backdrop-blur-sm"
+              style={{ 
+                backgroundColor: 'rgba(255,255,255,0.1)',
+                borderColor: 'rgba(255,255,255,0.3)',
+                color: colors.white
+              }}
             >
-              <span className="flex items-center justify-center">
+              <span className="flex items-center justify-center text-lg">
                 VIEW PREMIUM SERVICES
-                <svg className="w-5 h-5 ml-3 group-hover:translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 ml-3 group-hover:translate-y-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
                 </svg>
               </span>
@@ -658,8 +839,9 @@ const CarWashWebsite = () => {
           {/* Stats Preview */}
           <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto">
             {stats.map((stat, index) => (
-              <div key={index} className="text-center p-4">
-                <div className="text-3xl md:text-4xl font-bold text-white mb-2">{stat.number}</div>
+              <div key={index} className="text-center p-6 rounded-2xl backdrop-blur-sm"
+                   style={{ backgroundColor: 'rgba(255,255,255,0.05)' }}>
+                <div className="text-3xl md:text-4xl font-bold mb-2" style={{ color: colors.white }}>{stat.number}{index === 2 ? '%' : index === 3 ? '/7' : '+'}</div>
                 <div className="text-white/70 text-sm">{stat.label}</div>
               </div>
             ))}
@@ -673,27 +855,36 @@ const CarWashWebsite = () => {
         >
           <div className="flex flex-col items-center">
             <span className="text-white/60 text-sm mb-2">Explore More</span>
-            <div className="w-6 h-10 border-2 border-white/30 rounded-full flex justify-center">
-              <div className="w-1.5 h-3 bg-gradient-to-b from-[#EC625F] to-[#ff6b6b] rounded-full mt-2" />
+            <div className="w-8 h-12 border-2 rounded-full flex justify-center"
+                 style={{ borderColor: 'rgba(255,255,255,0.3)' }}>
+              <div className="w-2 h-4 rounded-full mt-3" style={{ background: colors.gradient2 }} />
             </div>
           </div>
         </div>
       </header>
 
       {/* Stats Section */}
-      <section className="section-padding bg-gradient-to-b from-white to-gray-50">
+      <section className="section-padding">
         <div className="section-inner">
           <div ref={statsRef} className="grid grid-cols-2 lg:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
               <div 
                 key={index}
-                className="text-center p-8 bg-white rounded-2xl shadow-lg hover-lift transition-all duration-300"
+                className="text-center p-10 rounded-2xl hover-lift transition-all duration-300 relative overflow-hidden group"
+                style={{ 
+                  backgroundColor: colors.white,
+                  boxShadow: '0 20px 40px rgba(0,0,0,0.05)'
+                }}
               >
-                <div className="text-4xl mb-4">{stat.icon}</div>
-                <div className="stat-number text-5xl font-bold text-[#313131] mb-2">
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-10 transition-opacity duration-300"
+                     style={{ background: colors.gradient1 }} />
+                <div className="text-5xl mb-6 transform group-hover:scale-110 transition-transform duration-300">
+                  {stat.icon}
+                </div>
+                <div className="stat-number text-6xl font-bold mb-4" style={{ color: colors.dark }}>
                   {stat.number}
                 </div>
-                <div className="text-lg text-[#525252]">{stat.label}</div>
+                <div className="text-xl" style={{ color: colors.gray }}>{stat.label}</div>
               </div>
             ))}
           </div>
@@ -701,55 +892,64 @@ const CarWashWebsite = () => {
       </section>
 
       {/* Services Section */}
-      <section id="services" className="section-padding bg-gradient-to-b from-gray-50 to-white">
+      <section id="services" className="section-padding">
         <div className="section-inner">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-[#313131] mb-6">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl md:text-6xl font-bold mb-8" style={{ color: colors.dark }}>
               <span className="relative inline-block">
-                <span className="relative z-10 bg-clip-text text-transparent bg-gradient-to-r from-[#EC625F] to-[#ff8e53]">
+                <span className="relative z-10">
                   Our Services
                 </span>
-                <span className="absolute bottom-2 left-0 w-full h-3 bg-gradient-to-r from-[#EC625F]/20 to-[#ff8e53]/20 -z-10" />
+                <span className="absolute bottom-3 left-0 w-full h-4 -z-10 opacity-20"
+                      style={{ background: colors.gradient1 }} />
               </span>
             </h2>
-            <p className="text-xl text-[#525252] max-w-3xl mx-auto">
+            <p className="text-2xl max-w-3xl mx-auto" style={{ color: colors.gray }}>
               We offer comprehensive detailing solutions using state-of-the-art equipment 
               and eco-friendly products for optimal results.
             </p>
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
             {services.map((service, index) => (
               <div 
                 key={index}
                 ref={el => servicesRef.current[index] = el}
-                className="group bg-white rounded-2xl shadow-xl overflow-hidden hover-lift border border-gray-100 transition-all duration-300"
+                className="group rounded-3xl overflow-hidden hover-lift transition-all duration-500 relative"
+                style={{ 
+                  backgroundColor: colors.white,
+                  boxShadow: '0 25px 50px rgba(0,0,0,0.05)'
+                }}
               >
-                <div className="p-8">
-                  <div className="flex items-start mb-8">
-                    <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${service.color} flex items-center justify-center text-3xl mr-6 transform group-hover:scale-110 transition-transform duration-500 shadow-lg`}>
+                <div className="p-10">
+                  <div className="flex items-start mb-10">
+                    <div className={`w-24 h-24 rounded-3xl flex items-center justify-center text-4xl mr-8 transform group-hover:scale-110 transition-transform duration-500 shadow-2xl`}
+                         style={{ background: service.color }}>
                       {service.icon}
                     </div>
-                    <div>
-                      <div className="flex items-center justify-between">
-                        <h3 className="text-2xl font-bold text-[#313131] mb-2">{service.title}</h3>
-                        <span className="px-3 py-1 bg-[#EC625F]/10 text-[#EC625F] text-sm font-semibold rounded-full">
+                    <div className="flex-1">
+                      <div className="flex items-center justify-between mb-4">
+                        <h3 className="text-3xl font-bold" style={{ color: colors.dark }}>{service.title}</h3>
+                        <span className="px-4 py-2 rounded-full text-sm font-semibold"
+                              style={{ backgroundColor: `${colors.accent}20`, color: colors.accent }}>
                           {service.time}
                         </span>
                       </div>
-                      <p className="text-[#525252]">{service.description}</p>
+                      <p className="text-lg" style={{ color: colors.gray }}>{service.description}</p>
                     </div>
                   </div>
                   
-                  <div className="border-t border-gray-100 pt-8">
-                    <h4 className="font-bold text-[#313131] mb-4 text-lg">Included Services:</h4>
-                    <div className="grid grid-cols-2 gap-3">
+                  <div className="border-t pt-10" style={{ borderColor: `${colors.dark}10` }}>
+                    <h4 className="font-bold text-xl mb-6" style={{ color: colors.dark }}>Included Services:</h4>
+                    <div className="grid grid-cols-2 gap-4">
                       {service.features.map((feature, idx) => (
-                        <div key={idx} className="flex items-center p-3 bg-gray-50 rounded-lg group-hover:bg-gray-100 transition-colors duration-300">
-                          <svg className="w-5 h-5 text-[#EC625F] mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        <div key={idx} className="flex items-center p-4 rounded-xl transition-all duration-300 group-hover:translate-x-2"
+                             style={{ backgroundColor: `${colors.dark}03` }}>
+                          <svg className="w-6 h-6 mr-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                               style={{ color: colors.primary }}>
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                           </svg>
-                          <span className="text-[#414141] text-sm">{feature}</span>
+                          <span className="text-lg" style={{ color: colors.dark }}>{feature}</span>
                         </div>
                       ))}
                     </div>
@@ -757,11 +957,16 @@ const CarWashWebsite = () => {
                   
                   <button 
                     onClick={() => openModal(service.title)}
-                    className="mt-8 w-full py-4 bg-gradient-to-r from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 text-[#313131] font-bold rounded-xl transition-all duration-300 transform hover:scale-[1.02] border border-gray-200 group"
+                    className="mt-12 w-full py-5 font-bold rounded-xl transition-all duration-300 transform hover:scale-[1.02] group-hover:shadow-lg border"
+                    style={{ 
+                      background: colors.gradient1,
+                      color: colors.white,
+                      borderColor: colors.primary
+                    }}
                   >
-                    <span className="flex items-center justify-center">
+                    <span className="flex items-center justify-center text-lg">
                       Book This Service
-                      <svg className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-6 h-6 ml-3 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
                       </svg>
                     </span>
@@ -774,91 +979,108 @@ const CarWashWebsite = () => {
       </section>
 
       {/* Premium Services Section */}
-      <section id="premium" className="section-padding bg-gradient-to-b from-white to-gray-50">
+      <section id="premium" className="section-padding" style={{ backgroundColor: `${colors.dark}05` }}>
         <div className="section-inner">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-[#313131] mb-6">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl md:text-6xl font-bold mb-8" style={{ color: colors.dark }}>
               <span className="relative inline-block">
-                <span className="relative z-10 bg-clip-text text-transparent bg-gradient-to-r from-[#EC625F] to-[#ff8e53]">
+                <span className="relative z-10">
                   Premium Services
                 </span>
-                <span className="absolute bottom-2 left-0 w-full h-3 bg-gradient-to-r from-[#EC625F]/20 to-[#ff8e53]/20 -z-10" />
+                <span className="absolute bottom-3 left-0 w-full h-4 -z-10 opacity-20"
+                      style={{ background: colors.gradient2 }} />
               </span>
             </h2>
-            <p className="text-xl text-[#525252] max-w-3xl mx-auto">
+            <p className="text-2xl max-w-3xl mx-auto" style={{ color: colors.gray }}>
               Experience our elite services with professional-grade products and expert craftsmanship.
             </p>
           </div>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
             {premiumServices.map((service, index) => (
               <div 
                 key={service.id}
-                className="group bg-white rounded-2xl shadow-xl overflow-hidden hover-lift border-2 transition-all duration-300 relative"
+                className="group rounded-3xl overflow-hidden hover-lift transition-all duration-500 relative"
+                style={{ 
+                  backgroundColor: colors.white,
+                  boxShadow: '0 25px 50px rgba(0,0,0,0.08)',
+                  border: service.popular ? `3px solid ${colors.secondary}` : '3px solid transparent'
+                }}
               >
                 {service.popular && (
-                  <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
-                    <div className="px-6 py-2 bg-gradient-to-r from-[#EC625F] to-[#ff6b6b] text-white font-bold rounded-full shadow-lg">
-                      POPULAR
+                  <div className="absolute top-6 right-6 z-10">
+                    <div className="px-6 py-3 font-bold rounded-full shadow-lg"
+                         style={{ background: colors.gradient2, color: colors.white }}>
+                      MOST POPULAR
                     </div>
                   </div>
                 )}
                 
-                <div className="p-8">
-                  <div className="flex items-start mb-8">
-                    <div className="w-24 h-24 rounded-2xl bg-gradient-to-br from-[#EC625F] to-[#ff8e53] flex items-center justify-center text-4xl mr-6 transform group-hover:scale-110 transition-transform duration-500 shadow-lg">
+                <div className="p-10">
+                  <div className="flex items-start mb-10">
+                    <div className="w-28 h-28 rounded-3xl flex items-center justify-center text-5xl mr-8 transform group-hover:scale-110 transition-transform duration-500 shadow-2xl"
+                         style={{ background: colors.gradient3 }}>
                       {service.icon}
                     </div>
                     <div className="flex-1">
                       <div className="flex items-start justify-between">
-                        <div>
-                          <h3 className="text-2xl font-bold text-[#313131] mb-2">{service.title}</h3>
-                          <p className="text-[#525252]">{service.description}</p>
+                        <div className="pr-4">
+                          <h3 className="text-3xl font-bold mb-4" style={{ color: colors.dark }}>{service.title}</h3>
+                          <p className="text-lg" style={{ color: colors.gray }}>{service.description}</p>
                         </div>
                         <div className="text-right">
-                          <div className="text-3xl font-bold bg-gradient-to-r from-[#313131] to-[#525252] bg-clip-text text-transparent">
+                          <div className="text-4xl font-bold mb-2"
+                               style={{ background: colors.gradient1, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                             {service.price}
                           </div>
-                          <div className="text-[#EC625F] font-semibold">{service.duration}</div>
+                          <div className="font-semibold text-lg" style={{ color: colors.secondary }}>{service.duration}</div>
                         </div>
                       </div>
                     </div>
                   </div>
                   
                   {/* Service Images Preview */}
-                  <div className="mb-8">
-                    <h4 className="font-bold text-[#313131] mb-4 text-lg">Gallery Preview:</h4>
-                    <div className="grid grid-cols-3 gap-3">
+                  <div className="mb-10">
+                    <h4 className="font-bold text-xl mb-6" style={{ color: colors.dark }}>Gallery Preview:</h4>
+                    <div className="grid grid-cols-3 gap-4">
                       {service.images.map((image, idx) => (
                         <div 
                           key={idx}
-                          className="aspect-square rounded-xl overflow-hidden cursor-pointer transform hover:scale-105 transition-transform duration-300"
+                          className="aspect-square rounded-2xl overflow-hidden cursor-pointer transform hover:scale-105 transition-all duration-300 relative group/img"
                           onClick={() => openGalleryModal({
                             url: image,
                             title: service.title,
                             service: service.title
                           })}
+                          onMouseEnter={() => setHoveredImage(`${service.id}-${idx}`)}
+                          onMouseLeave={() => setHoveredImage(null)}
                         >
-                          <img 
-                            src={image} 
-                            alt={`${service.title} ${idx + 1}`}
-                            className="w-full h-full object-cover"
-                            loading="lazy"
-                          />
+                          <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/30 transition-all duration-300 z-10" />
+                          <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover/img:opacity-100 transition-all duration-300 z-20">
+                            <div className="w-12 h-12 rounded-full flex items-center justify-center"
+                                 style={{ backgroundColor: colors.white }}>
+                              <svg className="w-6 h-6" style={{ color: colors.primary }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                              </svg>
+                            </div>
+                          </div>
+                          <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 animate-pulse" />
                         </div>
                       ))}
                     </div>
                   </div>
                   
-                  <div className="border-t border-gray-100 pt-8">
-                    <h4 className="font-bold text-[#313131] mb-4 text-lg">Features:</h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div className="border-t pt-10" style={{ borderColor: `${colors.dark}10` }}>
+                    <h4 className="font-bold text-xl mb-6" style={{ color: colors.dark }}>Features:</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {service.features.map((feature, idx) => (
-                        <div key={idx} className="flex items-center p-3 bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg group-hover:from-gray-100 group-hover:to-gray-200 transition-all duration-300">
-                          <svg className="w-5 h-5 text-[#EC625F] mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        <div key={idx} className="flex items-center p-4 rounded-xl transition-all duration-300 hover:translate-x-2"
+                             style={{ backgroundColor: `${colors.dark}03` }}>
+                          <svg className="w-6 h-6 mr-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                               style={{ color: colors.accent }}>
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                           </svg>
-                          <span className="text-[#414141] text-sm">{feature}</span>
+                          <span className="text-lg" style={{ color: colors.dark }}>{feature}</span>
                         </div>
                       ))}
                     </div>
@@ -866,11 +1088,19 @@ const CarWashWebsite = () => {
                   
                   <button 
                     onClick={() => openModal(service.title)}
-                    className={`mt-8 w-full py-4 font-bold rounded-xl transition-all duration-300 transform hover:scale-[1.02] ${
+                    className={`mt-12 w-full py-5 font-bold rounded-xl transition-all duration-300 transform hover:scale-[1.02] text-lg ${
                       service.popular
-                        ? 'bg-gradient-to-r from-[#EC625F] to-[#ff6b6b] hover:from-[#ff6b6b] hover:to-[#ff8e53] text-white shadow-lg'
-                        : 'bg-gradient-to-r from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 text-[#313131] border border-gray-200'
+                        ? 'shadow-xl hover:shadow-2xl'
+                        : 'border'
                     }`}
+                    style={service.popular ? {
+                      background: colors.gradient2,
+                      color: colors.white
+                    } : {
+                      background: colors.gradient1,
+                      color: colors.white,
+                      borderColor: colors.primary
+                    }}
                   >
                     BOOK PREMIUM SERVICE
                   </button>
@@ -881,20 +1111,91 @@ const CarWashWebsite = () => {
         </div>
       </section>
 
-      {/* Photo Gallery Section */}
-      <section id="gallery" className="section-padding bg-gradient-to-b from-gray-50 to-white" ref={galleryRef}>
+      {/* Car Wash Gallery Section - 8 Images */}
+      <section id="carwash" className="section-padding" ref={galleryRef}>
         <div className="section-inner">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-[#313131] mb-6">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl md:text-6xl font-bold mb-8" style={{ color: colors.dark }}>
               <span className="relative inline-block">
-                <span className="relative z-10 bg-clip-text text-transparent bg-gradient-to-r from-[#EC625F] to-[#ff8e53]">
-                  Our Work Gallery
+                <span className="relative z-10">
+                  Car Wash Gallery
                 </span>
-                <span className="absolute bottom-2 left-0 w-full h-3 bg-gradient-to-r from-[#EC625F]/20 to-[#ff8e53]/20 -z-10" />
+                <span className="absolute bottom-3 left-0 w-full h-4 -z-10 opacity-20"
+                      style={{ background: colors.gradient3 }} />
               </span>
             </h2>
-            <p className="text-xl text-[#525252] max-w-3xl mx-auto mb-12">
-              Browse through our portfolio of completed projects showcasing the quality and attention to detail we deliver.
+            <p className="text-2xl max-w-3xl mx-auto mb-12" style={{ color: colors.gray }}>
+              Witness our meticulous car wash process through these 8 high-quality images showcasing our expertise.
+            </p>
+          </div>
+          
+          {/* 8-Image Gallery Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {carWashGallery.map((image, index) => (
+              <div 
+                key={image.id}
+                ref={el => galleryImagesRef.current[index] = el}
+                className="gallery-item rounded-2xl overflow-hidden cursor-pointer transform transition-all duration-500 hover:scale-105 relative group"
+                onMouseEnter={() => setHoveredImage(`carwash-${image.id}`)}
+                onMouseLeave={() => setHoveredImage(null)}
+                onClick={() => openGalleryModal(image)}
+              >
+                <div className="aspect-square overflow-hidden">
+                  {/* Placeholder for your images - replace src with your actual image files */}
+                  <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 animate-pulse" />
+                </div>
+                
+                {/* Hover Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-6">
+                  <h3 className="text-white text-xl font-bold mb-2">{image.title}</h3>
+                  <p className="text-white/80 text-sm">{image.description}</p>
+                  <div className="mt-4 flex items-center">
+                    <span className="px-3 py-1 rounded-full text-xs font-medium mr-2"
+                          style={{ backgroundColor: colors.accent, color: colors.white }}>
+                      {image.category}
+                    </span>
+                    <span className="text-white/60 text-xs">View Details →</span>
+                  </div>
+                </div>
+                
+                {/* Badge */}
+                <div className="absolute top-4 left-4">
+                  <span className="px-3 py-1 rounded-full text-sm font-medium backdrop-blur-sm"
+                        style={{ backgroundColor: 'rgba(255,255,255,0.9)', color: colors.dark }}>
+                    Step {index + 1}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+          
+          <div className="text-center mt-16">
+            <button 
+              onClick={() => scrollToSection('#gallery')}
+              className="px-10 py-5 font-bold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg text-lg"
+              style={{ background: colors.gradient1, color: colors.white }}
+            >
+              VIEW PROCESS GALLERY
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* Process Gallery Section */}
+      <section id="gallery" className="section-padding" style={{ backgroundColor: `${colors.dark}05` }}>
+        <div className="section-inner">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-6xl font-bold mb-8" style={{ color: colors.dark }}>
+              <span className="relative inline-block">
+                <span className="relative z-10">
+                  Process Gallery
+                </span>
+                <span className="absolute bottom-3 left-0 w-full h-4 -z-10 opacity-20"
+                      style={{ background: colors.gradient1 }} />
+              </span>
+            </h2>
+            <p className="text-2xl max-w-3xl mx-auto mb-12" style={{ color: colors.gray }}>
+              Browse through our detailed process showcasing the quality and attention to detail we deliver.
             </p>
             
             {/* Gallery Filters */}
@@ -903,11 +1204,19 @@ const CarWashWebsite = () => {
                 <button
                   key={filter}
                   onClick={() => setSelectedGalleryFilter(filter)}
-                  className={`px-6 py-3 rounded-full font-medium transition-all duration-300 ${
+                  className={`px-8 py-4 rounded-xl font-medium transition-all duration-300 text-lg ${
                     selectedGalleryFilter === filter
-                      ? 'bg-gradient-to-r from-[#EC625F] to-[#ff6b6b] text-white shadow-lg'
-                      : 'bg-gray-100 text-[#525252] hover:bg-gray-200'
+                      ? 'shadow-lg'
+                      : 'hover:shadow-md'
                   }`}
+                  style={selectedGalleryFilter === filter ? {
+                    background: colors.gradient2,
+                    color: colors.white
+                  } : {
+                    backgroundColor: colors.white,
+                    color: colors.gray,
+                    border: `2px solid ${colors.dark}10`
+                  }}
                 >
                   {filter.charAt(0).toUpperCase() + filter.slice(1)}
                 </button>
@@ -916,37 +1225,37 @@ const CarWashWebsite = () => {
           </div>
           
           {/* Gallery Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredGalleryImages.map((image) => (
               <div 
                 key={image.id}
-                className="group relative overflow-hidden rounded-2xl shadow-lg cursor-pointer transform transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl"
+                className="rounded-2xl overflow-hidden cursor-pointer transform transition-all duration-500 hover:scale-105 relative group"
+                style={{ boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}
                 onClick={() => openGalleryModal(image)}
               >
                 <div className="aspect-[4/3] overflow-hidden">
-                  <img 
-                    src={image.url} 
-                    alt={image.title}
-                    className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
-                    loading="lazy"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 animate-pulse" />
                 </div>
                 
-                <div className="absolute bottom-0 left-0 right-0 p-6 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                  <div className="bg-gradient-to-t from-black/80 to-transparent p-4 rounded-xl">
-                    <h3 className="font-bold text-lg mb-2">{image.title}</h3>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                
+                <div className="absolute bottom-0 left-0 right-0 p-8 text-white transform translate-y-full group-hover:translate-y-0 transition-transform duration-500">
+                  <div className="p-6 rounded-2xl backdrop-blur-sm"
+                       style={{ backgroundColor: 'rgba(0,0,0,0.7)' }}>
+                    <h3 className="font-bold text-2xl mb-3">{image.title}</h3>
                     <div className="flex items-center justify-between">
-                      <span className="text-sm bg-[#EC625F] px-3 py-1 rounded-full">
+                      <span className="px-4 py-2 rounded-full font-medium"
+                            style={{ backgroundColor: colors.accent }}>
                         {image.category}
                       </span>
-                      <span className="text-sm opacity-90">{image.service}</span>
+                      <span className="text-lg opacity-90">{image.service}</span>
                     </div>
                   </div>
                 </div>
                 
-                <div className="absolute top-4 right-4">
-                  <span className="bg-white/90 backdrop-blur-sm text-[#313131] px-3 py-1 rounded-full text-sm font-medium">
+                <div className="absolute top-6 right-6">
+                  <span className="px-4 py-2 rounded-full text-sm font-medium backdrop-blur-sm"
+                        style={{ backgroundColor: 'rgba(255,255,255,0.9)', color: colors.dark }}>
                     View
                   </span>
                 </div>
@@ -954,81 +1263,102 @@ const CarWashWebsite = () => {
             ))}
           </div>
           
-          <div className="text-center mt-12">
+          <div className="text-center mt-16">
             <button 
-              onClick={() => scrollToSection('#premium')}
-              className="px-8 py-4 bg-gradient-to-r from-[#313131] to-[#525252] hover:from-[#414141] hover:to-[#313131] text-white font-bold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg"
+              onClick={() => openModal('Custom Gallery Tour')}
+              className="px-10 py-5 font-bold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg text-lg"
+              style={{ background: colors.gradient3, color: colors.white }}
             >
-              VIEW ALL PREMIUM SERVICES
+              SCHEDULE A TOUR
             </button>
           </div>
         </div>
       </section>
 
       {/* Pricing Section */}
-      <section id="pricing" className="section-padding bg-gradient-to-b from-white to-gray-50">
+      <section id="pricing" className="section-padding">
         <div className="section-inner">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-[#313131] mb-6">
+          <div className="text-center mb-20">
+            <h2 className="text-4xl md:text-6xl font-bold mb-8" style={{ color: colors.dark }}>
               <span className="relative inline-block">
-                <span className="relative z-10 bg-clip-text text-transparent bg-gradient-to-r from-[#EC625F] to-[#ff8e53]">
+                <span className="relative z-10">
                   Transparent Pricing
                 </span>
-                <span className="absolute bottom-2 left-0 w-full h-3 bg-gradient-to-r from-[#EC625F]/20 to-[#ff8e53]/20 -z-10" />
+                <span className="absolute bottom-3 left-0 w-full h-4 -z-10 opacity-20"
+                      style={{ background: colors.gradient2 }} />
               </span>
             </h2>
-            <p className="text-xl text-[#525252] max-w-3xl mx-auto">
+            <p className="text-2xl max-w-3xl mx-auto" style={{ color: colors.gray }}>
               Choose from our carefully crafted packages designed to meet every need and budget.
             </p>
           </div>
           
-          <div ref={pricingRef} className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div ref={pricingRef} className="grid grid-cols-1 lg:grid-cols-3 gap-10">
             {plans.map((plan, index) => (
               <div 
                 key={index}
-                className={`bg-white rounded-2xl shadow-xl overflow-hidden hover-lift border-2 transition-all duration-300 relative ${
+                className={`rounded-3xl overflow-hidden hover-lift transition-all duration-500 relative ${
                   plan.popular 
-                    ? 'border-[#EC625F] shadow-2xl scale-105' 
-                    : 'border-gray-100'
+                    ? 'scale-105 shadow-2xl' 
+                    : 'shadow-xl'
                 }`}
+                style={{ 
+                  backgroundColor: colors.white,
+                  border: plan.popular ? `4px solid ${colors.secondary}` : '4px solid transparent'
+                }}
               >
                 {plan.popular && (
-                  <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                    <div className="px-6 py-2 bg-gradient-to-r from-[#EC625F] to-[#ff6b6b] text-white font-bold rounded-full shadow-lg">
+                  <div className="absolute top-8 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10">
+                    <div className="px-8 py-3 font-bold rounded-full shadow-2xl"
+                         style={{ background: colors.gradient2, color: colors.white }}>
                       MOST POPULAR
                     </div>
                   </div>
                 )}
                 
-                <div className="p-8 pt-12">
-                  <div className="text-center mb-8">
-                    <h3 className="text-2xl font-bold text-[#313131] mb-3">{plan.name}</h3>
-                    <div className="flex items-baseline justify-center mb-4">
-                      <span className="text-6xl font-bold bg-gradient-to-r from-[#313131] to-[#525252] bg-clip-text text-transparent">
+                <div className="p-12 pt-16">
+                  <div className="text-center mb-12">
+                    <h3 className="text-3xl font-bold mb-6" style={{ color: colors.dark }}>{plan.name}</h3>
+                    <div className="flex items-baseline justify-center mb-6">
+                      <span className="text-7xl font-bold" style={{ 
+                        background: colors.gradient1,
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent'
+                      }}>
                         {plan.price}
                       </span>
                     </div>
-                    <p className="text-[#525252]">{plan.description}</p>
+                    <p className="text-xl" style={{ color: colors.gray }}>{plan.description}</p>
                   </div>
                   
-                  <div className="space-y-4 mb-8">
+                  <div className="space-y-4 mb-12">
                     {plan.features.map((feature, idx) => (
-                      <div key={idx} className="flex items-center p-3 bg-gray-50 rounded-lg">
-                        <svg className="w-5 h-5 text-[#EC625F] mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                      <div key={idx} className="flex items-center p-5 rounded-xl"
+                           style={{ backgroundColor: `${colors.dark}03` }}>
+                        <svg className="w-7 h-7 mr-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                             style={{ color: colors.primary }}>
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
                         </svg>
-                        <span className="text-[#414141]">{feature}</span>
+                        <span className="text-lg" style={{ color: colors.dark }}>{feature}</span>
                       </div>
                     ))}
                   </div>
                   
                   <button 
                     onClick={() => openModal(plan.name)}
-                    className={`w-full py-4 font-bold rounded-xl transition-all duration-300 transform hover:scale-[1.02] ${
+                    className={`w-full py-6 font-bold rounded-xl transition-all duration-300 transform hover:scale-[1.02] text-xl ${
                       plan.popular
-                        ? 'bg-gradient-to-r from-[#EC625F] to-[#ff6b6b] hover:from-[#ff6b6b] hover:to-[#ff8e53] text-white shadow-lg'
-                        : 'bg-gradient-to-r from-gray-50 to-gray-100 hover:from-gray-100 hover:to-gray-200 text-[#313131] border border-gray-200'
+                        ? 'shadow-xl hover:shadow-2xl'
+                        : 'border-2'
                     }`}
+                    style={plan.popular ? {
+                      background: colors.gradient2,
+                      color: colors.white
+                    } : {
+                      background: colors.gradient1,
+                      color: colors.white,
+                      borderColor: colors.primary
+                    }}
                   >
                     {plan.popular ? 'GET STARTED NOW' : 'SELECT PLAN'}
                   </button>
@@ -1038,18 +1368,26 @@ const CarWashWebsite = () => {
           </div>
           
           {/* Custom Package */}
-          <div className="mt-16 bg-gradient-to-r from-[#EC625F]/10 to-[#ff8e53]/10 rounded-2xl p-8 border border-[#EC625F]/20">
+          <div className="mt-20 rounded-3xl p-12 border"
+               style={{ 
+                 background: colors.gradient3,
+                 borderColor: colors.accent
+               }}>
             <div className="flex flex-col lg:flex-row items-center justify-between">
-              <div className="mb-6 lg:mb-0">
-                <h3 className="text-2xl font-bold text-[#313131] mb-3">Need a Custom Package?</h3>
-                <p className="text-[#525252] max-w-2xl">
+              <div className="mb-8 lg:mb-0 lg:pr-12">
+                <h3 className="text-3xl font-bold mb-6" style={{ color: colors.white }}>Need a Custom Package?</h3>
+                <p className="text-xl mb-0" style={{ color: 'rgba(255,255,255,0.9)' }}>
                   Our detailing experts can create a personalized package tailored to your vehicle's 
                   specific needs and your budget requirements.
                 </p>
               </div>
               <button 
                 onClick={() => openModal('Custom')}
-                className="px-8 py-4 bg-gradient-to-r from-[#313131] to-[#525252] hover:from-[#414141] hover:to-[#313131] text-white font-bold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg"
+                className="px-12 py-6 font-bold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-2xl text-xl"
+                style={{ 
+                  backgroundColor: colors.white,
+                  color: colors.dark
+                }}
               >
                 REQUEST QUOTE
               </button>
@@ -1059,27 +1397,40 @@ const CarWashWebsite = () => {
       </section>
 
       {/* CTA Section */}
-      <section id="contact" className="section-padding bg-gradient-to-br from-[#313131] via-[#414141] to-[#525252] text-white">
-        <div className="section-inner">
+      <section id="contact" className="section-padding relative overflow-hidden">
+        {/* Background Pattern */}
+        <div className="absolute inset-0 opacity-5">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `radial-gradient(circle at 2px 2px, ${colors.primary} 1px, transparent 0)`,
+            backgroundSize: '80px 80px'
+          }} />
+        </div>
+        
+        <div className="relative z-10 section-inner">
           <div className="text-center max-w-4xl mx-auto">
-            <h2 className="text-4xl md:text-5xl font-bold mb-8">
+            <h2 className="text-4xl md:text-6xl font-bold mb-12" style={{ color: colors.dark }}>
               Ready to Transform Your
-              <span className="block mt-4 bg-clip-text text-transparent bg-gradient-to-r from-[#EC625F] via-[#ff6b6b] to-[#ff8e53]">
+              <span className="block mt-6" style={{ 
+                background: colors.gradient1,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent'
+              }}>
                 Vehicle's Appearance?
               </span>
             </h2>
-            <p className="text-xl text-white/80 mb-12 max-w-2xl mx-auto">
+            <p className="text-2xl mb-16 max-w-2xl mx-auto" style={{ color: colors.gray }}>
               Book your appointment today and experience premium car care that exceeds expectations.
             </p>
             
-            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            <div className="flex flex-col sm:flex-row gap-8 justify-center">
               <button 
                 onClick={() => openModal('Premium Detail')}
-                className="px-12 py-5 bg-gradient-to-r from-[#EC625F] to-[#ff6b6b] hover:from-[#ff6b6b] hover:to-[#ff8e53] text-white font-bold rounded-full shadow-2xl hover-lift text-lg group transition-all duration-300"
+                className="px-16 py-6 font-bold rounded-full shadow-2xl hover-lift text-xl group transition-all duration-300"
+                style={{ background: colors.gradient2, color: colors.white }}
               >
                 <span className="flex items-center justify-center">
                   BOOK NOW
-                  <svg className="w-5 h-5 ml-3 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-7 h-7 ml-4 group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
                   </svg>
                 </span>
@@ -1087,11 +1438,16 @@ const CarWashWebsite = () => {
               
               <a 
                 href="tel:+18885551234"
-                className="px-12 py-5 bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white font-bold rounded-full border-2 border-white/30 hover:border-white/50 shadow-xl transition-all duration-300 group hover-lift"
+                className="px-16 py-6 font-bold rounded-full border-2 shadow-xl transition-all duration-300 group hover-lift text-xl"
+                style={{ 
+                  backgroundColor: colors.white,
+                  borderColor: colors.primary,
+                  color: colors.primary
+                }}
               >
                 <span className="flex items-center justify-center">
                   CALL: (888) 555-1234
-                  <svg className="w-5 h-5 ml-3 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-7 h-7 ml-4 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                   </svg>
                 </span>
@@ -1102,22 +1458,30 @@ const CarWashWebsite = () => {
       </section>
 
       {/* Footer */}
-      <footer className="bg-[#313131] text-white py-16">
+      <footer className="py-20" style={{ backgroundColor: colors.dark }}>
         <div className="section-inner">
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-12 mb-12">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-16 mb-16">
             <div>
-              <div className="flex items-center mb-6">
-                <div className="mr-3">
-                  <Logo />
+              <div className="flex items-center mb-8">
+                <div className="w-16 h-16 rounded-xl overflow-hidden bg-white p-3 shadow-lg mr-4">
+                  <img 
+                    src="/logo.png" 
+                    alt="Prestige Car Care Logo" 
+                    className="w-full h-full object-contain"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Ccircle cx='20' cy='20' r='18' fill='%230F62FE'/%3E%3Cpath d='M12 15L20 8L28 15V25L20 32L12 25V15Z' fill='white'/%3E%3Cpath d='M16 18L20 14L24 18V22L20 26L16 22V18Z' fill='%23FF6B35'/%3E%3C/svg%3E";
+                    }}
+                  />
                 </div>
                 <div>
-                  <div className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#EC625F] to-[#ff6b6b]">
+                  <div className="text-2xl font-bold mb-1" style={{ color: colors.white }}>
                     PRESTIGE
                   </div>
-                  <div className="text-xs text-white/70">CAR CARE</div>
+                  <div className="text-sm tracking-wider" style={{ color: colors.accent }}>CAR CARE</div>
                 </div>
               </div>
-              <p className="text-white/70 mb-6">
+              <p className="mb-8 text-lg" style={{ color: 'rgba(255,255,255,0.7)' }}>
                 Premium car wash and detailing services using eco-friendly products 
                 and professional equipment since 2012.
               </p>
@@ -1126,9 +1490,10 @@ const CarWashWebsite = () => {
                   <a 
                     key={social}
                     href="#"
-                    className="w-10 h-10 rounded-full bg-[#414141] hover:bg-[#EC625F] flex items-center justify-center transition-colors duration-300"
+                    className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 hover:shadow-lg"
+                    style={{ backgroundColor: 'rgba(255,255,255,0.1)' }}
                   >
-                    {social.charAt(0)}
+                    <span className="text-white font-bold">{social.charAt(0)}</span>
                   </a>
                 ))}
               </div>
@@ -1137,7 +1502,7 @@ const CarWashWebsite = () => {
             {[
               {
                 title: "Quick Links",
-                links: ['Home', 'Services', 'Premium', 'Gallery', 'Pricing', 'Contact']
+                links: ['Home', 'Services', 'Premium', 'Gallery', 'CarWash', 'Pricing', 'Contact']
               },
               {
                 title: "Premium Services",
@@ -1149,13 +1514,14 @@ const CarWashWebsite = () => {
               }
             ].map((column, idx) => (
               <div key={idx}>
-                <h4 className="text-lg font-bold mb-6 text-white">{column.title}</h4>
-                <ul className="space-y-3">
+                <h4 className="text-xl font-bold mb-8" style={{ color: colors.white }}>{column.title}</h4>
+                <ul className="space-y-4">
                   {column.links.map((link, linkIdx) => (
                     <li key={linkIdx}>
                       <a 
                         href="#"
-                        className="text-white/70 hover:text-[#EC625F] transition-colors duration-300"
+                        className="text-lg transition-colors duration-300 hover:translate-x-2 inline-block"
+                        style={{ color: 'rgba(255,255,255,0.7)' }}
                       >
                         {link}
                       </a>
@@ -1166,8 +1532,8 @@ const CarWashWebsite = () => {
             ))}
           </div>
           
-          <div className="border-t border-[#414141] pt-8 text-center">
-            <p className="text-white/60">
+          <div className="border-t pt-12 text-center" style={{ borderColor: 'rgba(255,255,255,0.1)' }}>
+            <p className="text-lg" style={{ color: 'rgba(255,255,255,0.5)' }}>
               © {new Date().getFullYear()} PRESTIGE CAR CARE & DETAILING. All rights reserved.
             </p>
           </div>
@@ -1176,59 +1542,74 @@ const CarWashWebsite = () => {
 
       {/* Booking Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70">
-          <div className="booking-modal bg-white rounded-2xl max-w-lg w-full p-8 shadow-2xl">
-            <div className="flex justify-between items-center mb-8">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0,0,0,0.8)' }}>
+          <div className="booking-modal rounded-3xl max-w-2xl w-full p-10 shadow-2xl"
+               style={{ backgroundColor: colors.white }}>
+            <div className="flex justify-between items-center mb-12">
               <div>
-                <h3 className="text-2xl font-bold text-[#313131]">Book {selectedPlan}</h3>
-                <p className="text-[#525252] mt-1">Fill out the form below to schedule your appointment</p>
+                <h3 className="text-3xl font-bold mb-3" style={{ color: colors.dark }}>Book {selectedPlan}</h3>
+                <p className="text-xl" style={{ color: colors.gray }}>Fill out the form below to schedule your appointment</p>
               </div>
               <button 
                 onClick={closeModal}
-                className="w-10 h-10 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors duration-300"
+                className="w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110"
+                style={{ backgroundColor: `${colors.dark}05` }}
               >
-                <svg className="w-6 h-6 text-[#525252]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                     style={{ color: colors.gray }}>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
             
-            <form className="space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <form className="space-y-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                 <div>
-                  <label className="block text-[#414141] font-medium mb-2">Full Name *</label>
+                  <label className="block text-lg font-medium mb-4" style={{ color: colors.dark }}>Full Name *</label>
                   <input 
                     type="text" 
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-[#EC625F] focus:ring-2 focus:ring-[#EC625F]/20 transition-all"
+                    className="w-full px-6 py-4 rounded-xl transition-all text-lg"
+                    style={{ backgroundColor: `${colors.dark}03`, border: `2px solid transparent` }}
                     placeholder="John Doe"
                     required
+                    onFocus={(e) => e.target.style.borderColor = colors.primary}
+                    onBlur={(e) => e.target.style.borderColor = 'transparent'}
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-[#414141] font-medium mb-2">Phone Number *</label>
+                  <label className="block text-lg font-medium mb-4" style={{ color: colors.dark }}>Phone Number *</label>
                   <input 
                     type="tel" 
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-[#EC625F] focus:ring-2 focus:ring-[#EC625F]/20 transition-all"
+                    className="w-full px-6 py-4 rounded-xl transition-all text-lg"
+                    style={{ backgroundColor: `${colors.dark}03`, border: `2px solid transparent` }}
                     placeholder="(555) 123-4567"
                     required
+                    onFocus={(e) => e.target.style.borderColor = colors.primary}
+                    onBlur={(e) => e.target.style.borderColor = 'transparent'}
                   />
                 </div>
               </div>
               
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
                 <div>
-                  <label className="block text-[#414141] font-medium mb-2">Preferred Date *</label>
+                  <label className="block text-lg font-medium mb-4" style={{ color: colors.dark }}>Preferred Date *</label>
                   <input 
                     type="date" 
-                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-[#EC625F] focus:ring-2 focus:ring-[#EC625F]/20 transition-all"
+                    className="w-full px-6 py-4 rounded-xl transition-all text-lg"
+                    style={{ backgroundColor: `${colors.dark}03`, border: `2px solid transparent` }}
                     required
+                    onFocus={(e) => e.target.style.borderColor = colors.primary}
+                    onBlur={(e) => e.target.style.borderColor = 'transparent'}
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-[#414141] font-medium mb-2">Vehicle Type *</label>
-                  <select className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-[#EC625F] focus:ring-2 focus:ring-[#EC625F]/20 transition-all">
+                  <label className="block text-lg font-medium mb-4" style={{ color: colors.dark }}>Vehicle Type *</label>
+                  <select className="w-full px-6 py-4 rounded-xl transition-all text-lg"
+                          style={{ backgroundColor: `${colors.dark}03`, border: `2px solid transparent` }}
+                          onFocus={(e) => e.target.style.borderColor = colors.primary}
+                          onBlur={(e) => e.target.style.borderColor = 'transparent'}>
                     <option value="">Select Vehicle Type</option>
                     <option value="sedan">Sedan</option>
                     <option value="suv">SUV / Crossover</option>
@@ -1241,32 +1622,39 @@ const CarWashWebsite = () => {
               </div>
               
               <div>
-                <label className="block text-[#414141] font-medium mb-2">Email Address *</label>
+                <label className="block text-lg font-medium mb-4" style={{ color: colors.dark }}>Email Address *</label>
                 <input 
                   type="email" 
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-[#EC625F] focus:ring-2 focus:ring-[#EC625F]/20 transition-all"
+                  className="w-full px-6 py-4 rounded-xl transition-all text-lg"
+                  style={{ backgroundColor: `${colors.dark}03`, border: `2px solid transparent` }}
                   placeholder="john@example.com"
                   required
+                  onFocus={(e) => e.target.style.borderColor = colors.primary}
+                  onBlur={(e) => e.target.style.borderColor = 'transparent'}
                 />
               </div>
               
               <div>
-                <label className="block text-[#414141] font-medium mb-2">Special Requests</label>
+                <label className="block text-lg font-medium mb-4" style={{ color: colors.dark }}>Special Requests</label>
                 <textarea 
-                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:border-[#EC625F] focus:ring-2 focus:ring-[#EC625F]/20 transition-all resize-none"
-                  rows="3"
+                  className="w-full px-6 py-4 rounded-xl transition-all text-lg resize-none"
+                  style={{ backgroundColor: `${colors.dark}03`, border: `2px solid transparent` }}
+                  rows="4"
                   placeholder="Any specific requirements, notes, or areas needing special attention..."
+                  onFocus={(e) => e.target.style.borderColor = colors.primary}
+                  onBlur={(e) => e.target.style.borderColor = 'transparent'}
                 />
               </div>
               
               <button 
                 type="submit"
-                className="w-full py-4 bg-gradient-to-r from-[#EC625F] to-[#ff6b6b] hover:from-[#ff6b6b] hover:to-[#ff8e53] text-white font-bold rounded-xl transition-all duration-300 transform hover:scale-[1.02] shadow-lg"
+                className="w-full py-5 font-bold rounded-xl transition-all duration-300 transform hover:scale-[1.02] shadow-xl text-xl"
+                style={{ background: colors.gradient1, color: colors.white }}
               >
                 CONFIRM BOOKING
               </button>
               
-              <p className="text-center text-[#525252] text-sm">
+              <p className="text-center text-lg" style={{ color: colors.gray }}>
                 We'll contact you within 1 hour to confirm your appointment details.
               </p>
             </form>
@@ -1277,30 +1665,33 @@ const CarWashWebsite = () => {
       {/* Gallery Image Modal */}
       {selectedGalleryImage && (
         <div 
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ backgroundColor: 'rgba(0,0,0,0.9)' }}
           onClick={closeGalleryModal}
         >
-          <div className="relative max-w-4xl w-full max-h-[90vh]">
+          <div className="relative max-w-6xl w-full max-h-[90vh]">
             <button 
               onClick={closeGalleryModal}
-              className="absolute top-4 right-4 w-10 h-10 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center transition-colors duration-300 z-10"
+              className="absolute top-8 right-8 w-14 h-14 rounded-full flex items-center justify-center transition-all duration-300 hover:scale-110 z-10"
+              style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
             >
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
             
-            <img 
-              src={selectedGalleryImage.url} 
-              alt={selectedGalleryImage.title}
-              className="w-full h-full object-contain rounded-2xl"
-            />
+            <div className="w-full h-full rounded-3xl overflow-hidden bg-gradient-to-br from-gray-800 to-gray-900 animate-pulse" />
             
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6 rounded-b-2xl">
-              <h3 className="text-white text-2xl font-bold mb-2">{selectedGalleryImage.title}</h3>
+            <div className="absolute bottom-0 left-0 right-0 p-10 rounded-b-3xl"
+                 style={{ background: 'linear-gradient(to top, rgba(0,0,0,0.9), transparent)' }}>
+              <h3 className="text-white text-4xl font-bold mb-4">{selectedGalleryImage.title}</h3>
               <div className="flex items-center justify-between">
-                <span className="text-[#EC625F] font-semibold">{selectedGalleryImage.service}</span>
-                <span className="text-white/80 capitalize">{selectedGalleryImage.category} Service</span>
+                <span className="text-2xl font-semibold" style={{ color: colors.accent }}>
+                  {selectedGalleryImage.service || selectedGalleryImage.description}
+                </span>
+                <span className="text-xl text-white/80 capitalize">
+                  {selectedGalleryImage.category} Service
+                </span>
               </div>
             </div>
           </div>
@@ -1309,40 +1700,47 @@ const CarWashWebsite = () => {
 
       <style jsx>{`
         .section-padding {
-          padding: 6rem 0;
+          padding: 8rem 0;
         }
         
         .section-inner {
-          max-width: 1200px;
+          max-width: 1400px;
           margin: 0 auto;
-          padding: 0 1rem;
+          padding: 0 2rem;
         }
         
         .hover-lift {
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
+          transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.5s ease;
         }
         
         .hover-lift:hover {
-          transform: translateY(-5px);
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+          transform: translateY(-10px) scale(1.02);
+          box-shadow: 0 40px 80px rgba(0, 0, 0, 0.15);
         }
         
         @keyframes float {
           0%, 100% {
-            transform: translateY(0);
+            transform: translateY(0) rotate(0deg);
           }
-          50% {
-            transform: translateY(-20px);
+          33% {
+            transform: translateY(-20px) rotate(5deg);
+          }
+          66% {
+            transform: translateY(10px) rotate(-5deg);
           }
         }
         
         .animate-float {
-          animation: float 4s ease-in-out infinite;
+          animation: float 6s ease-in-out infinite;
         }
         
         @media (max-width: 768px) {
           .section-padding {
-            padding: 4rem 0;
+            padding: 5rem 0;
+          }
+          
+          .section-inner {
+            padding: 0 1.5rem;
           }
         }
       `}</style>
