@@ -1,0 +1,67 @@
+@import "tailwindcss";
+
+/* =====================================================
+   BASE STYLES
+===================================================== */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-white text-gray-800;
+    overflow-x: hidden;
+  }
+}
+
+/* =====================================================
+   CUSTOM COMPONENTS
+===================================================== */
+@layer components {
+  .scroll-progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 4px;
+    width: 0;
+    z-index: 100;
+    background: linear-gradient(90deg, #EC625F, #ff6b6b, #ff8e53);
+  }
+}
+
+/* =====================================================
+   ANIMATIONS
+===================================================== */
+@keyframes float {
+  0%, 100% { 
+    transform: translateY(0); 
+  }
+  50% { 
+    transform: translateY(-20px); 
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* =====================================================
+   SCROLLBAR
+===================================================== */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #e5e7eb;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #EC625F, #ff6b6b);
+  border-radius: 6px;
+}
+
+::selection {
+  background: rgba(236, 98, 95, 0.3);
+  color: #313131;
+}
