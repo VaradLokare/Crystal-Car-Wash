@@ -28,7 +28,7 @@ const CarWashWebsite = () => {
   const galleryRef = useRef(null);
   const timeline = useRef(null);
 
-  // Premium Services Data
+  // Premium Services Data (same as before)
   const premiumServices = [
     {
       id: 1,
@@ -124,7 +124,7 @@ const CarWashWebsite = () => {
     }
   ];
 
-  // Gallery Images Data
+  // Gallery Images Data (same as before)
   const galleryImages = [
     {
       id: 1,
@@ -386,58 +386,64 @@ const CarWashWebsite = () => {
     }
 
     // Enhanced Pricing animation with bounce effect
-    gsap.from(pricingRef.current, {
-      scrollTrigger: {
-        trigger: pricingRef.current,
-        start: "top 85%",
-        toggleActions: "play none none reverse"
-      },
-      duration: 1.5,
-      y: 100,
-      opacity: 0,
-      scale: 0.9,
-      ease: "elastic.out(1, 0.5)"
-    });
-
-    // Enhanced Stats animation with counting
-    const statsElements = statsRef.current?.querySelectorAll('.stat-number');
-    if (statsElements) {
-      statsElements.forEach((stat, index) => {
-        gsap.from(stat, {
-          scrollTrigger: {
-            trigger: statsRef.current,
-            start: "top 80%",
-            toggleActions: "play none none reverse"
-          },
-          duration: 2.5,
-          innerText: 0,
-          ease: "power3.out",
-          snap: { innerText: 1 },
-          delay: index * 0.3,
-          onUpdate: function() {
-            const value = Math.ceil(this.targets()[0].innerText);
-            this.targets()[0].innerText = value.toLocaleString();
-          }
-        });
+    if (pricingRef.current) {
+      gsap.from(pricingRef.current, {
+        scrollTrigger: {
+          trigger: pricingRef.current,
+          start: "top 85%",
+          toggleActions: "play none none reverse"
+        },
+        duration: 1.5,
+        y: 100,
+        opacity: 0,
+        scale: 0.9,
+        ease: "elastic.out(1, 0.5)"
       });
     }
 
+    // Enhanced Stats animation with counting
+    if (statsRef.current) {
+      const statsElements = statsRef.current.querySelectorAll('.stat-number');
+      if (statsElements) {
+        statsElements.forEach((stat, index) => {
+          gsap.from(stat, {
+            scrollTrigger: {
+              trigger: statsRef.current,
+              start: "top 80%",
+              toggleActions: "play none none reverse"
+            },
+            duration: 2.5,
+            innerText: 0,
+            ease: "power3.out",
+            snap: { innerText: 1 },
+            delay: index * 0.3,
+            onUpdate: function() {
+              const value = Math.ceil(this.targets()[0].innerText);
+              this.targets()[0].innerText = value.toLocaleString();
+            }
+          });
+        });
+      }
+    }
+
     // Enhanced Navbar animation with glass morphism
-    gsap.to(navRef.current, {
-      scrollTrigger: {
-        trigger: headerRef.current,
-        start: "bottom top",
-        end: "+=200",
-        toggleActions: "play reverse play reverse",
-        scrub: 0.5
-      },
-      duration: 0.8,
-      backgroundColor: "rgba(31, 31, 31, 0.85)",
-      backdropFilter: "blur(20px)",
-      padding: "0.75rem 0",
-      borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
-      ease: "power2.out"
-    });
+    if (navRef.current) {
+      gsap.to(navRef.current, {
+        scrollTrigger: {
+          trigger: headerRef.current,
+          start: "bottom top",
+          end: "+=200",
+          toggleActions: "play reverse play reverse",
+          scrub: 0.5
+        },
+        duration: 0.8,
+        backgroundColor: "rgba(31, 31, 31, 0.85)",
+        backdropFilter: "blur(20px)",
+        padding: "0.75rem 0",
+        borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+        ease: "power2.out"
+      });
+    }
 
     // Section tracking for active nav
     const sections = ['hero', 'services', 'premium', 'gallery', 'pricing', 'contact'];
@@ -1513,6 +1519,13 @@ const CarWashWebsite = () => {
           max-width: 1280px;
           margin: 0 auto;
           padding: 0 2rem;
+        }
+        
+        .section-divider {
+          height: 1px;
+          background: linear-gradient(90deg, transparent, rgba(236, 98, 95, 0.2), transparent);
+          margin: 0 auto;
+          max-width: 1200px;
         }
         
         @keyframes fadeInUp {
